@@ -4,6 +4,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Реализует нетерминальное правило КС-грамматики. Может быть описано
+ * множеством нетерминальных выражений. Допускается рекурсивное определение,
+ * например:
+ * <p><code>SOMERULE = ENOTHER_RULE | SOMERULE ENOTHER_RULE</code>
+ *
+ * @see NonterminalBNFExpression
+ */
 public class NonterminalBNFRule extends AbstractBNFRule{
 
     public NonterminalBNFRule() {
