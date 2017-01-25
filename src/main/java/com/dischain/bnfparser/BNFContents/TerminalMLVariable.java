@@ -1,5 +1,10 @@
 package com.dischain.bnfparser.BNFContents;
 
+/**
+ * Реализация терминальной металингвистической переменной КС-грамматики.
+ * Может содержать в себе любую последовательность символов, не разделенных
+ * символами <code>\n</code>, <code>\t</code> и любыми пробельными символами.
+ */
 public class TerminalMLVariable extends AbstractMLVariable {
 
     public TerminalMLVariable() {
