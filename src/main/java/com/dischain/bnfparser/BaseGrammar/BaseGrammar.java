@@ -63,4 +63,20 @@ public class BaseGrammar {
     public static AbstractMLVariable get(String key){
         return BaseGrammarContainer.getIncludingAliases(key);
     }
+
+    public static boolean equals(String  val1, BaseGrammarMLVariable val2) {
+        for (String alias : val2.getAliases()) {
+            if (alias.equalsIgnoreCase(val1))
+                return true;
+        }
+        return false;
+    }
+
+    public static boolean equals(AbstractMLVariable val1, BaseGrammarMLVariable val2) {
+        for (String alias : val2.getAliases()) {
+            if (alias.equalsIgnoreCase(val1.getVariable()))
+                return true;
+        }
+        return false;
+    }
 }
