@@ -82,7 +82,7 @@ public class BNFGrammarReader {
         if(var.equals("SP")) return;
         if(BaseGrammar.containsValue(var)) {
             String name = BaseGrammar.get(var).getVariable();
-            NonterminalMLVariable ntmlv = new NonterminalMLVariable(name);
+            TerminalMLVariable ntmlv = new TerminalMLVariable(name);
             righthandside.add(ntmlv);
         } else {
             righthandside.add(new NonterminalMLVariable(var));
