@@ -74,12 +74,16 @@ public class BNFGrammarReader {
      * Проверяет слово, считанное из ввода, на совпадение с символом баловой грамматики.
      * Если совпадение обнаружено, то помещает соответствующий нетерминальный символ
      * в <code>righthandside</code>. Если совпадений не обнаружено, то создается простая
-     * нетерминальная переменнаяю
+     * нетерминальная переменная.
+     *
+     * В данном методе вырезаются символы <code>IS</code> и <code>SP</code>
+     * базовой грамматики.
      * @param var слово, которое подлежит проверке
      * @param righthandside правая часть выражения грамматики
      */
     public static void checkValue(String var, ArrayList<AbstractMLVariable> righthandside) {
-        if(var.equals("SP")) return;
+        //if(var.equals("SP") || var.equals("=")) return;
+        if(BaseGrammar.equals(var, BaseGrammar.IS) || BaseGrammar.equals(var, BaseGrammar.SP)) return;
         if(BaseGrammar.containsValue(var)) {
             String name = BaseGrammar.get(var).getVariable();
             TerminalMLVariable ntmlv = new TerminalMLVariable(name);
