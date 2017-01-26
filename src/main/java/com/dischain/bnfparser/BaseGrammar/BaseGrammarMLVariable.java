@@ -20,6 +20,7 @@ public class BaseGrammarMLVariable extends AbstractMLVariable{
     public BaseGrammarMLVariable(String generalName, String ... aliases) {
         super(generalName);
         this.aliases = new ArrayList<String>();
+        //this.aliases.add(this.getVariable());
         this.aliases.addAll(Arrays.asList(aliases));
     }
 
