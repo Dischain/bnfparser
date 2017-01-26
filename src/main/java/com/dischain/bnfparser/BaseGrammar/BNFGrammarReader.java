@@ -4,12 +4,12 @@ import com.dischain.bnfparser.BNFContents.AbstractMLVariable;
 import com.dischain.bnfparser.BNFContents.NonterminalMLVariable;
 import com.dischain.bnfparser.BNFContents.TerminalMLVariable;
 import com.dischain.bnfparser.Util.TrieTree;
-import com.dischain.bnfparser.Util.Util;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 
 public class BNFGrammarReader {
 
@@ -39,6 +39,7 @@ public class BNFGrammarReader {
                     rule += line;
                 }
             }
+            reader.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -55,7 +56,7 @@ public class BNFGrammarReader {
             reader = new BufferedReader (new FileReader (path));
 
             while ((line = reader.readLine()) != null) {
-                if (line.equals ("")) { // тут проверить гипотезу, что readline() читает поток, пока                                                       // не встретит символ новой строки
+                if (line.equals ("")) {
                     listOfRules.add(rule);
                     rule = "";
                 } else {
@@ -63,6 +64,7 @@ public class BNFGrammarReader {
                     rule += line;
                 }
             }
+            reader.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -71,20 +73,18 @@ public class BNFGrammarReader {
     }
 
     /**
-     * Проверяет слово, считанное из ввода, на совпадение с символом баловой грамматики.
+     * Проверяет слово, считанное из ввода, на совпадение с символом базовой грамматики.
      * Если совпадение обнаружено, то помещает соответствующий нетерминальный символ
      * в <code>righthandside</code>. Если совпадений не обнаружено, то создается простая
      * нетерминальная переменная.
      *
-     * В данном методе вырезаются символы <code>IS</code> и <code>SP</code>
-     * базовой грамматики.
+     * В данном методе вырезается символ <code>IS</code> базовой грамматики.
      * @param var слово, которое подлежит проверке
      * @param righthandside правая часть выражения грамматики
      */
-    public static void checkValue(String var, ArrayList<AbstractMLVariable> righthandside) {
-        //if(var.equals("SP") || var.equals("=")) return;
-        if(BaseGrammar.equals(var, BaseGrammar.IS) || BaseGrammar.equals(var, BaseGrammar.SP)) return;
-        if(BaseGrammar.containsValue(var)) {
+    public void checkValue(String var, ArrayList<AbstractMLVariable> righthandside) {
+        if(BaseGrammar.equalsByAliases(var, BaseGrammar.IS)) return;
+        else if(BaseGrammar.containsValue(var)) {
             String name = BaseGrammar.get(var).getVariable();
             TerminalMLVariable ntmlv = new TerminalMLVariable(name);
             righthandside.add(ntmlv);
@@ -147,7 +147,7 @@ public class BNFGrammarReader {
                     if (!tt.contains (variable.getVariable()) &&
                             !BaseGrammar.isBaseGrammarSymbol(variable)) {
                         System.out.println("Отсутствует определение правила " + variable.getVariable()
-                                + "обнаружено в правиле для " + ruleName);
+                                + " обнаружено в правиле для " + ruleName);
                         rules.remove(ruleName);
                     }
                     //throw new NonTerminalSymbolsDefinitionEexception (variable.getValue());
@@ -156,13 +156,80 @@ public class BNFGrammarReader {
         } return true;
     }
 
+    /**
+     * Разбивает множество пар (имя правила - список металингвистических переменных), (в которых
+     * уже отсутствует нетерминал <code>IS</code>) на отображение множества имен правил на множество
+     * выражений. В отдельное выражение попадает множество символов, разделенных базовыми
+     * терминалами грамматики <code>OR</code>
+     */
+    public Map<String, ArrayList<ArrayList<AbstractMLVariable>>> trimToExpresssions
+    (Map<String, ArrayList<AbstractMLVariable>> rules) {
+        Map<String, ArrayList<ArrayList<AbstractMLVariable>>> ruleMap =
+                new HashMap<String, ArrayList<ArrayList<AbstractMLVariable>>>();
+
+        for (String ruleName : rules.keySet()) {
+            int d = 0;
+            int ruleLength = rules.get(ruleName).size();
+            ArrayList<ArrayList<AbstractMLVariable>> exprList = new ArrayList<ArrayList<AbstractMLVariable>>();
+
+            while (d < ruleLength) {
+                ArrayList<AbstractMLVariable> expr = new ArrayList<AbstractMLVariable>();
+
+                while (d != ruleLength) {
+                    AbstractMLVariable currentVar = rules.get(ruleName).get(d);
+                    if (!BaseGrammar.equalsByName (currentVar, BaseGrammar.OR)) {
+                        expr.add(currentVar);
+                        d ++;
+                        if (d + 1 > ruleLength) {
+                            exprList.add(expr);
+                            break;
+                        }
+                    } else {
+                        exprList.add(expr);
+                        d++;
+                        break;
+                    }
+                }
+            }
+            ruleMap.put(ruleName, exprList);
+            System.out.println(exprList);
+        }
+        return ruleMap;
+    }
+
+    public void checkExpressions (Map<String, ArrayList<ArrayList<AbstractMLVariable>>> exprMap) {
+        for(String ruleName : exprMap.keySet()) {
+            for (ArrayList<AbstractMLVariable> expression: exprMap.get(ruleName)) {
+                int [] terminality = new int[expression.size()];
+                int checkSum2 = expression.size();
+                for (int i = 0; i < expression.size(); i++) {
+                    if (expression.get(i).isTerminal() && !BaseGrammar.equalsByAliases(expression.get(i), BaseGrammar.OR)
+                            && !BaseGrammar.equalsByAliases(expression.get(i), BaseGrammar.SP))
+                        terminality[i] = 1;
+                    else if (expression.get(i).isTerminal())
+                        terminality[i] = 0;
+                    else checkSum2--;
+                }
+                int checkSum1 = 0;
+                for (int i : terminality) {
+                    checkSum1 += i;
+                }
+                if(checkSum1 != checkSum2) {
+                    System.out.println("В правиле " + ruleName + " присутствуют терминальыне и нетерминальные символы");
+                }
+                System.out.println("Для правила: " + ruleName + " checkSum1: " + checkSum1 + " checkSum2: " + checkSum2);
+            }
+        }
+    }
 
     public static void main(String[] args) {
-        String path = "src/main/java/com/dischain/bnfparser/config.sav";
+        String path = "src/main/java/com/dischain/bnfparser/config2.sav";
         BNFGrammarReader reader = new BNFGrammarReader();
         reader.readRule (path);
         HashMap<String, ArrayList<AbstractMLVariable>> rules = reader.formRules(reader.getListOfRules());
         reader.checkNonTerms(rules);
-        Util.print(rules);
+        Map<String, ArrayList<ArrayList<AbstractMLVariable>>> expressions = reader.trimToExpresssions(rules);
+        reader.checkExpressions(expressions);
+        //Util.print(expressions);
     }
 }
