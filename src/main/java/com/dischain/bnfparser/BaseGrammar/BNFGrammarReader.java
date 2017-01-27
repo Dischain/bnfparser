@@ -1,15 +1,10 @@
 package com.dischain.bnfparser.BaseGrammar;
 
-import com.dischain.bnfparser.BNFContents.AbstractMLVariable;
-import com.dischain.bnfparser.BNFContents.NonterminalMLVariable;
-import com.dischain.bnfparser.BNFContents.TerminalMLVariable;
+import com.dischain.bnfparser.BNFContents.*;
 import com.dischain.bnfparser.Util.TrieTree;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class BNFGrammarReader {
 
@@ -221,6 +216,39 @@ public class BNFGrammarReader {
             }
         }
     }
+
+    public List<AbstractBNFRule> createRules (Map <String, ArrayList<ArrayList<AbstractMLVariable>>> rulesMap) {
+        ArrayList<AbstractBNFRule> rules = new ArrayList<AbstractBNFRule>();
+
+        for (String ruleName : rulesMap.keySet()) {
+            ArrayList<AbstractBNFExpression> expressions = this.createExpressions(rulesMap.get(ruleName));
+
+            //Если первое выражение терминальное, то и все выражения - терминальные. И наоборот.
+            if (expressions.get(0).isTerminalExpression()) {
+                rules.add (new TerminalBNFRule (ruleName, expressions);
+            } else {
+                rules.add (new NonterminalBNFRule (ruleName, expressions);
+            }
+        }
+        return rules;
+    }
+
+    public ArrayList<AbstractBNFExpression> createExpressions (ArrayList<ArrayList<AbstractMLVariable>> vars) {
+        ArrayList<AbstractBNFExpression> expressions = new ArrayList<AbstractBNFExpression>();
+
+        for (ArrayList<AbstractMLVariable> list : vars) {
+            AbstractBNFExpression expr;
+            //Если первая переменная терминальная, то все переменные - терминальные. И наоборот.
+            if (list.get(0).isTerminal()) {
+                expr = new TerminalBNFExpression (list.get(0));
+            } else {
+                expr = new NonterminalBNFExpression (list);
+            }
+            expressions.add(expr);
+        }
+        return expressions;
+    }
+
 
     public static void main(String[] args) {
         String path = "src/main/java/com/dischain/bnfparser/config2.sav";
