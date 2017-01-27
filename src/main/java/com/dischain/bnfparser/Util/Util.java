@@ -15,4 +15,14 @@ public class Util {
             System.out.println(rule.getValue());
         }
     }
+
+    public static void print(Map<String, ArrayList<ArrayList<AbstractMLVariable>>> expressions){
+
+        for (String ruleName : expressions.keySet()) {
+            System.out.print(ruleName + " = ");
+            for (ArrayList<AbstractMLVariable> arList : expressions.get(ruleName)) {
+                System.out.println(arList);
+            }
+        }
+    }
 }
