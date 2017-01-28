@@ -25,6 +25,25 @@ public class TerminalBNFRule extends AbstractBNFRule {
         constructTrieTree(expressions);
     }
 
+    public TerminalBNFRule(String ruleName, List<AbstractBNFExpression> expressions) {
+        super(ruleName);
+        for (AbstractBNFExpression expr : expressions) {
+            if (expr.isTerminalExpression())
+                this.expressions.add(expr);
+        }
+
+        constructTrieTree(expressions);
+    }
+
+    private void constructTrieTree(List<AbstractBNFExpression> expressions) {
+        if (trieTree == null)
+            trieTree = new TrieTree<String>();
+        for (AbstractBNFExpression expr : expressions) {
+            String variable = expr.getVariables().get(0).getVariable();
+            trieTree.put(variable);
+        }
+    }
+
     private void constructTrieTree(AbstractBNFExpression ... expressions) {
         if (trieTree == null)
             trieTree = new TrieTree<String>();
@@ -60,6 +79,18 @@ public class TerminalBNFRule extends AbstractBNFRule {
             listOfVars.add(expr.getVariables());
         }
         return listOfVars;
+    }
+
+    @Override
+    public String toString() {
+        String result = ruleName.toUpperCase() + " = ";
+        boolean flag = true;
+        for (AbstractBNFExpression expr : this.expressions) {
+            if (!flag) result += " | ";
+            result += expr.toString();
+            flag = false;
+        }
+        return result;
     }
 
     public static void main(String[] args) {
