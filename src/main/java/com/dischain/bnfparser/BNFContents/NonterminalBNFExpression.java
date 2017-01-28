@@ -15,6 +15,14 @@ public class NonterminalBNFExpression extends AbstractBNFExpression {
         this.variables.addAll(Arrays.asList(variables));
     }
 
+    public NonterminalBNFExpression (List<AbstractMLVariable> variables) {
+        this();
+        for (AbstractMLVariable var : variables) {
+            if (!var.isTerminal())
+                this.variables.add(var);
+        }
+    }
+
     public List<AbstractMLVariable> getVariables() {
         return variables;
     }
