@@ -81,7 +81,7 @@ public class BNFGrammarReader {
         if(BaseGrammar.equalsByAliases(var, BaseGrammar.IS)) return;
         else if(BaseGrammar.containsValue(var)) {
             String name = BaseGrammar.get(var).getVariable();
-            TerminalMLVariable ntmlv = new TerminalMLVariable(name);
+            NonterminalMLVariable ntmlv = new NonterminalMLVariable(name);
             righthandside.add(ntmlv);
         } else {
             righthandside.add(new NonterminalMLVariable(var));
@@ -192,29 +192,35 @@ public class BNFGrammarReader {
         return ruleMap;
     }
 
+    /**
+     * Выполняет проверку на наличие терминальных и нетерминальных символов в однов выражениее
+     * @param exprMap
+     */
     public void checkExpressions (Map<String, ArrayList<ArrayList<AbstractMLVariable>>> exprMap) {
         for(String ruleName : exprMap.keySet()) {
             for (ArrayList<AbstractMLVariable> expression: exprMap.get(ruleName)) {
-                int [] terminality = new int[expression.size()];
-                int checkSum2 = expression.size();
+                int checkSum1 = expression.size();
+                int checkSum2 = 0;
                 for (int i = 0; i < expression.size(); i++) {
-                    if (expression.get(i).isTerminal() && !BaseGrammar.equalsByAliases(expression.get(i), BaseGrammar.OR)
-                            && !BaseGrammar.equalsByAliases(expression.get(i), BaseGrammar.SP))
-                        terminality[i] = 1;
+                    if (!expression.get(i).isTerminal())
+                        checkSum2++;
                     else if (expression.get(i).isTerminal())
-                        terminality[i] = 0;
-                    else checkSum2--;
+                        checkSum2--;
+                    //else checkSum2--;
                 }
-                int checkSum1 = 0;
-                for (int i : terminality) {
-                    checkSum1 += i;
-                }
-                if(checkSum1 != checkSum2) {
+                if(checkSum1 != Math.abs(checkSum2)) {
                     System.out.println("В правиле " + ruleName + " присутствуют терминальыне и нетерминальные символы");
                 }
-                System.out.println("Для правила: " + ruleName + " checkSum1: " + checkSum1 + " checkSum2: " + checkSum2);
+                //System.out.println("Для правила: " + ruleName + " checkSum1: " + checkSum1 + " checkSum2: " + checkSum2);
             }
         }
+    }
+
+    /**
+     * Выполняет проверку на то, что в последовательности выражений в правиле все выражение одного типа
+     */
+    public void checkExpressionsSequence (ArrayList<AbstractBNFExpression>  expressions) {
+
     }
 
     public List<AbstractBNFRule> createRules (Map <String, ArrayList<ArrayList<AbstractMLVariable>>> rulesMap) {
@@ -225,9 +231,9 @@ public class BNFGrammarReader {
 
             //Если первое выражение терминальное, то и все выражения - терминальные. И наоборот.
             if (expressions.get(0).isTerminalExpression()) {
-                rules.add (new TerminalBNFRule (ruleName, expressions);
+                rules.add (new TerminalBNFRule (ruleName, expressions));
             } else {
-                rules.add (new NonterminalBNFRule (ruleName, expressions);
+                rules.add (new NonterminalBNFRule (ruleName, expressions));
             }
         }
         return rules;
@@ -249,7 +255,6 @@ public class BNFGrammarReader {
         return expressions;
     }
 
-
     public static void main(String[] args) {
         String path = "src/main/java/com/dischain/bnfparser/config2.sav";
         BNFGrammarReader reader = new BNFGrammarReader();
@@ -258,6 +263,7 @@ public class BNFGrammarReader {
         reader.checkNonTerms(rules);
         Map<String, ArrayList<ArrayList<AbstractMLVariable>>> expressions = reader.trimToExpresssions(rules);
         reader.checkExpressions(expressions);
+        // TODO: 28.01.2017 Test "createRules" and "createExpressions" methodes.
         //Util.print(expressions);
     }
 }
