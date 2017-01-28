@@ -12,6 +12,12 @@ public class TerminalBNFExpression extends AbstractBNFExpression {
         this.variables = new ArrayList<AbstractMLVariable>(SIZE);
     }
 
+    public TerminalBNFExpression (AbstractMLVariable variable) {
+        this();
+        if (variable.isTerminal())
+            this.variables.add(variable);
+    }
+
     public TerminalBNFExpression (TerminalMLVariable variable) {
         this();
         this.variables.add(variable);
