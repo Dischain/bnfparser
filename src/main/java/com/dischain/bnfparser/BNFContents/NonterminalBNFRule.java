@@ -27,6 +27,14 @@ public class NonterminalBNFRule extends AbstractBNFRule{
         this.expressions.addAll(Arrays.asList(expressions));
     }
 
+    public NonterminalBNFRule(String ruleName, List<AbstractBNFExpression> expressions) {
+        super(ruleName);
+        for (AbstractBNFExpression expr : expressions) {
+            if (!expr.isTerminalExpression())
+                this.expressions.add(expr);
+        }
+    }
+
     public boolean isTerminalRule() {
         return false;
     }
