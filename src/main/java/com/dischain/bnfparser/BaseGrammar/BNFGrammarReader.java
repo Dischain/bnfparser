@@ -219,8 +219,23 @@ public class BNFGrammarReader {
     /**
      * Выполняет проверку на то, что в последовательности выражений в правиле все выражение одного типа
      */
-    public void checkExpressionsSequence (ArrayList<AbstractBNFExpression>  expressions) {
+    public void checkExpressionsSequence (String ruleName,
+                                          ArrayList<AbstractBNFExpression>  expressions) {
+        int checkSum1 = expressions.size();
+        int checkSum2 = 0;
 
+        for (AbstractBNFExpression expr : expressions) {
+            if (!expr.isTerminalExpression()) {
+                checkSum2++;
+            } else {
+                checkSum2--;
+            }
+        }
+
+        if (checkSum1 != Math.abs (checkSum2)) {
+            System.out.println ("В правиле " + ruleName
+                    + " присутствуют терминальные и нетерминальные выражения");
+        }
     }
 
     public List<AbstractBNFRule> createRules (Map <String, ArrayList<ArrayList<AbstractMLVariable>>> rulesMap) {
@@ -228,9 +243,9 @@ public class BNFGrammarReader {
 
         for (String ruleName : rulesMap.keySet()) {
             ArrayList<AbstractBNFExpression> expressions = this.createExpressions(rulesMap.get(ruleName));
-
+            this.checkExpressionsSequence(ruleName, expressions);
             //Если первое выражение терминальное, то и все выражения - терминальные. И наоборот.
-            if (expressions.get(0).isTerminalExpression()) {
+            if (!expressions.isEmpty() && expressions.get(0).isTerminalExpression()) {
                 rules.add (new TerminalBNFRule (ruleName, expressions));
             } else {
                 rules.add (new NonterminalBNFRule (ruleName, expressions));
@@ -256,13 +271,18 @@ public class BNFGrammarReader {
     }
 
     public static void main(String[] args) {
-        String path = "src/main/java/com/dischain/bnfparser/config2.sav";
+        String path = "src/main/java/com/dischain/bnfparser/config3.sav";
         BNFGrammarReader reader = new BNFGrammarReader();
         reader.readRule (path);
         HashMap<String, ArrayList<AbstractMLVariable>> rules = reader.formRules(reader.getListOfRules());
         reader.checkNonTerms(rules);
         Map<String, ArrayList<ArrayList<AbstractMLVariable>>> expressions = reader.trimToExpresssions(rules);
         reader.checkExpressions(expressions);
+        List<AbstractBNFRule> myRules = reader.createRules(expressions);
+        System.out.println("-------------------");
+        for (AbstractBNFRule rule : myRules) {
+            System.out.println(rule);
+        }
         // TODO: 28.01.2017 Test "createRules" and "createExpressions" methodes.
         //Util.print(expressions);
     }
