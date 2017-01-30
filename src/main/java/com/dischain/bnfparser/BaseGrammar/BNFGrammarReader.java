@@ -1,6 +1,7 @@
 package com.dischain.bnfparser.BaseGrammar;
 
 import com.dischain.bnfparser.BNFContents.*;
+import com.dischain.bnfparser.Exception.BNFParseException;
 import com.dischain.bnfparser.Util.TrieTree;
 
 import java.io.*;
@@ -9,7 +10,7 @@ import java.util.*;
 public class BNFGrammarReader {
 
     private ArrayList<String> listOfRules;
-    BufferedReader reader;
+    private BufferedReader reader;
 
     public BNFGrammarReader () {
         listOfRules = new ArrayList<String>();
@@ -220,7 +221,7 @@ public class BNFGrammarReader {
      * Выполняет проверку на то, что в последовательности выражений в правиле все выражение одного типа
      */
     public void checkExpressionsSequence (String ruleName,
-                                          ArrayList<AbstractBNFExpression>  expressions) {
+                                          ArrayList<AbstractBNFExpression>  expressions) throws BNFParseException{
         int checkSum1 = expressions.size();
         int checkSum2 = 0;
 
@@ -235,6 +236,8 @@ public class BNFGrammarReader {
         if (checkSum1 != Math.abs (checkSum2)) {
             System.out.println ("В правиле " + ruleName
                     + " присутствуют терминальные и нетерминальные выражения");
+            throw new BNFParseException("В правиле " + ruleName
+                    + " присутствуют терминальные и нетерминальные выражения");
         }
     }
 
@@ -243,7 +246,11 @@ public class BNFGrammarReader {
 
         for (String ruleName : rulesMap.keySet()) {
             ArrayList<AbstractBNFExpression> expressions = this.createExpressions(rulesMap.get(ruleName));
-            this.checkExpressionsSequence(ruleName, expressions);
+            try {
+                this.checkExpressionsSequence(ruleName, expressions);
+            } catch (BNFParseException e) {
+                e.printStackTrace();
+            }
             //Если первое выражение терминальное, то и все выражения - терминальные. И наоборот.
             if (!expressions.isEmpty() && expressions.get(0).isTerminalExpression()) {
                 rules.add (new TerminalBNFRule (ruleName, expressions));
@@ -271,7 +278,7 @@ public class BNFGrammarReader {
     }
 
     public static void main(String[] args) {
-        String path = "src/main/java/com/dischain/bnfparser/config3.sav";
+        String path = "src/main/java/com/dischain/bnfparser/config.sav";
         BNFGrammarReader reader = new BNFGrammarReader();
         reader.readRule (path);
         HashMap<String, ArrayList<AbstractMLVariable>> rules = reader.formRules(reader.getListOfRules());
