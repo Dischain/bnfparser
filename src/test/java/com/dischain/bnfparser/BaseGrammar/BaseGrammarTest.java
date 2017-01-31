@@ -3,13 +3,14 @@ package com.dischain.bnfparser.BaseGrammar;
 import com.dischain.bnfparser.BNFContents.TerminalMLVariable;
 import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.*;
 
 public class BaseGrammarTest {
 
     @Test
     public void equalsByAliasesIncludingNameTest() throws Exception {
         TerminalMLVariable currentVar = new TerminalMLVariable(BaseGrammar.get("IS").getVariable());
-        Assert.assertTrue(BaseGrammar.equalsByAliasesIncludingName (currentVar, BaseGrammar.OR));
+        Assert.assertTrue(BaseGrammar.equalsByAliasesIncludingName (currentVar, BaseGrammar.IS));
     }
 
     @Test

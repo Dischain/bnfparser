@@ -188,7 +188,7 @@ public class BNFGrammarReader {
                 }
             }
             ruleMap.put(ruleName, exprList);
-            System.out.println(exprList);
+            //System.out.println(exprList);
         }
         return ruleMap;
     }
