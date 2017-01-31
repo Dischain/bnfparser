@@ -71,5 +71,8 @@ public abstract class AbstractBNFRule {
     public abstract void addExpressions(AbstractBNFExpression ... expressions);
 
     public abstract boolean isTerminalRule ();
+
+    public abstract boolean containsTerm (String term);
+
     public abstract List <List <AbstractMLVariable>> getListsOfVariables ();
 }
