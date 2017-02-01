@@ -56,6 +56,10 @@ public class NonterminalBNFRule extends AbstractBNFRule{
         }
     }
 
+    public boolean containsTerm(String term) {
+        return false;
+    }
+
     @Override
     public String toString() {
         String result = ruleName.toUpperCase() + " = ";

@@ -81,6 +81,10 @@ public class TerminalBNFRule extends AbstractBNFRule {
         return listOfVars;
     }
 
+    public boolean containsTerm(String term) {
+        return trieTree.contains(term);
+    }
+
     @Override
     public String toString() {
         String result = ruleName.toUpperCase() + " = ";

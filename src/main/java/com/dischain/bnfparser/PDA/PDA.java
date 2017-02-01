@@ -1,16 +1,33 @@
 package com.dischain.bnfparser.PDA;
 
-import com.dischain.bnfparser.BNFContents.AbstractBNFExpression;
-import com.dischain.bnfparser.BNFContents.AbstractBNFRule;
-import com.dischain.bnfparser.BNFContents.AbstractMLVariable;
-import com.dischain.bnfparser.BNFContents.BNFGrammar;
+import com.dischain.bnfparser.BNFContents.*;
+
+import java.util.Stack;
 
 public class PDA {
 
     private BNFGrammar grammar;
 
+    private Stack<AbstractMLVariable> stack;
+
     public PDA (BNFGrammar grammar) {
         this.grammar = grammar;
+        stack = new Stack<AbstractMLVariable>();
+        String  initialRuleName = grammar.getInitialRule().getRuleName();
+        AbstractMLVariable initialVariable = grammar.getNonterm(initialRuleName);
+        stack.push(initialVariable);
+    }
+
+    public boolean acceptSequence(String word) {
+
+        //while (true) {
+
+            for (AbstractBNFExpression expr : grammar.getRule(stack.peek().getVariable()).getExpressions()) {
+                System.out.println(expr);
+            }
+        //}
+
+        return false;
     }
 
     public void depthFirstSearch(String word, AbstractBNFRule fromRule, Boolean found) {
