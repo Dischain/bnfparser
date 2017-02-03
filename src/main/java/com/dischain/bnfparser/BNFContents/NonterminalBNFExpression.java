@@ -36,6 +36,10 @@ public class NonterminalBNFExpression extends AbstractBNFExpression {
         return false;
     }
 
+    public boolean equalsTerm(String term) {
+        return false;
+    }
+
     @Override
     public String toString() {
         String result = "";

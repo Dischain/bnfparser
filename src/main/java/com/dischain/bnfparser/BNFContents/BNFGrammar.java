@@ -44,6 +44,10 @@ public class BNFGrammar {
         return rules.get(ruleName);
     }
 
+    public AbstractBNFRule getRule (AbstractMLVariable ruleName) {
+        return rules.get(ruleName.getVariable());
+    }
+
     public Map<String, NonterminalMLVariable> getNontermAlphabet () {
         return nontermAlphabet;
     }

@@ -30,6 +30,23 @@ public class PDA {
         return false;
     }
 
+    public void depthFirstSearch (String word, AbstractBNFExpression expression, Boolean contains) {
+
+        if (expression.isTerminalExpression()) {
+            System.out.println("Нашли терминальное выражение");
+            if (expression.equalsTerm(word)) {
+                contains = true;
+                return;
+            }
+        }
+
+        else if (!expression.isTerminalExpression()) {
+            for (AbstractMLVariable var : expression.getVariables()) {
+                depthFirstSearch (word, grammar.getRule(var), false);
+            }
+        }
+    }
+
     public void depthFirstSearch(String word, AbstractBNFRule fromRule, Boolean found) {
         String ruleName = "";
 

@@ -49,6 +49,10 @@ public class TerminalBNFExpression extends AbstractBNFExpression {
         return true;
     }
 
+    public boolean equalsTerm(String term) {
+        return variables.get(0).getVariable().equals(term);
+    }
+
     @Override
     public String toString() {
         if(!variables.isEmpty()) {

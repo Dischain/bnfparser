@@ -40,4 +40,6 @@ public abstract class AbstractBNFExpression {
      * @return false если нет
      */
     public abstract boolean isTerminalExpression ();
+
+    public abstract boolean equalsTerm(String term);
 }
