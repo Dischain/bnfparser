@@ -1,5 +1,7 @@
 package com.dischain.bnfparser.BaseGrammar;
 
+import com.dischain.bnfparser.BNFContents.AbstractMLVariable;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,7 +13,7 @@ import java.util.Map;
  * @see BaseGrammarContainer
  * @see BaseGrammarMLVariable
  */
-public class BaseGrammarContainer {
+class BaseGrammarContainer {
 
     private static HashMap<String, BaseGrammarMLVariable> container;
 
@@ -19,11 +21,15 @@ public class BaseGrammarContainer {
         container = new HashMap<String, BaseGrammarMLVariable>();
     }
 
-    public static void put(String key, BaseGrammarMLVariable variable) {
+    static void put(String key, BaseGrammarMLVariable variable) {
         container.put(key, variable);
     }
 
-    public static boolean containsKey(String key) {
+    public static BaseGrammarMLVariable get (AbstractMLVariable var) {
+        return container.get(var.getVariable());
+    }
+
+    static boolean containsKey(String key) {
         return container.containsKey(key);
     }
 
@@ -32,7 +38,7 @@ public class BaseGrammarContainer {
      * @param var слово, для которого ищутся совпадения
      * @return <code>true</code>, если такое слово является базовым символом грамматики
      */
-    public static boolean containsVariable(String var) {
+    static boolean containsVariable(String var) {
         for (Map.Entry<String, BaseGrammarMLVariable> baseVar : container.entrySet()) {
             if(baseVar.getKey().equals(var)) return true;
             for(String  alias : baseVar.getValue().getAliases()) {
@@ -51,7 +57,7 @@ public class BaseGrammarContainer {
      * @return экземпляр класса <code>BaseGrammarMLVariable</code>, соответствующий
      * базовому символу грамматики с указанным ключем
      */
-    public static BaseGrammarMLVariable getIncludingAliases(String key) {
+    static BaseGrammarMLVariable getIncludingAliases(String key) {
         for (Map.Entry<String, BaseGrammarMLVariable> baseVar : container.entrySet()) {
             if(baseVar.getKey().equals(key)) return container.get(key);
             for(String  alias : baseVar.getValue().getAliases()) {

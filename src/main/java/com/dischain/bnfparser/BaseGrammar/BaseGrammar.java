@@ -15,22 +15,22 @@ public class BaseGrammar {
     /**
      * Equals to SP = " " | "\t" terminal rule
      */
-    public static final BaseGrammarMLVariable SP = new BaseGrammarMLVariable("SP", " ", "\t");
+    static final BaseGrammarMLVariable SP = new BaseGrammarMLVariable("SP", " ", "\t");
 
     /**
      * Equals to OR = "|" terminal rule
      */
-    public static final BaseGrammarMLVariable OR = new BaseGrammarMLVariable("OR", "|");
+    static final BaseGrammarMLVariable OR = new BaseGrammarMLVariable("OR", "|");
 
     /**
      * Equals to IS = "=" terminal rule
      */
-    public static final BaseGrammarMLVariable IS = new BaseGrammarMLVariable("IS", "=");
+    static final BaseGrammarMLVariable IS = new BaseGrammarMLVariable("IS", "=");
 
     /**
      * Equals to QUOTE = '"' terminal rule
      */
-    public static final BaseGrammarMLVariable QUOTE = new BaseGrammarMLVariable("QUOTE", String.valueOf('"'));
+    static final BaseGrammarMLVariable QUOTE = new BaseGrammarMLVariable("QUOTE", String.valueOf('"'));
 
     static {
         BaseGrammarContainer.put(SP.getVariable(), SP);
@@ -57,8 +57,8 @@ public class BaseGrammar {
     /**
      * Возвращает металингвистическую переменную, соответствующую некоторой 
      * базовой переменной грамматики или любому из ее псевдонимов
-     * @param key
-     * @return
+     * @param key ключ, соответствующий металингвистической переменное или ее псевдониму
+     * @return металнигвистическую переменную, чье имя или псевдоним совпадает с {@code key}
      */
     public static AbstractMLVariable get(String key){
         return BaseGrammarContainer.getIncludingAliases(key);
@@ -131,7 +131,6 @@ public class BaseGrammar {
         for (String alias : bvar.getAliases()) {
             if(var.getVariable().equals(alias))
                 return true;
-            else continue;
         }
         return false;
     }
@@ -167,5 +166,10 @@ public class BaseGrammar {
 
     public static boolean equalsByAliasesIncludingName (String var, BaseGrammarMLVariable bvar) {
         return equalsByName(var, bvar) || equalsByAliases(var, bvar);
+    }
+
+    public static boolean equals (String word, AbstractMLVariable var) {
+        BaseGrammarMLVariable bvar = BaseGrammarContainer.get (var);
+        return equalsByAliases(word, bvar);
     }
 }
