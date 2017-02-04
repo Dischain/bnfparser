@@ -1,5 +1,7 @@
 package com.dischain.bnfparser.BNFContents;
 
+import com.dischain.bnfparser.BaseGrammar.BaseGrammar;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,5 +60,14 @@ public class BNFGrammar {
 
     public HashMap<String, AbstractBNFRule> getRules () {
         return rules;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for (Map.Entry<String, AbstractBNFRule> rule : rules.entrySet()) {
+            sb.append(rule.getValue().toString() + "\n");
+        }
+        return sb.toString();
     }
 }

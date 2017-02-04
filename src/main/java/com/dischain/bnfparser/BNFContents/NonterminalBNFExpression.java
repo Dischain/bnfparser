@@ -1,5 +1,6 @@
 package com.dischain.bnfparser.BNFContents;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -7,7 +8,7 @@ import java.util.List;
 public class NonterminalBNFExpression extends AbstractBNFExpression {
 
     public NonterminalBNFExpression () {
-        this.variables = new LinkedList<AbstractMLVariable>();
+        this.variables = new ArrayList<AbstractMLVariable>();
     }
 
     public NonterminalBNFExpression (NonterminalMLVariable ... variables) {
