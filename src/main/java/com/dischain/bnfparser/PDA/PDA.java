@@ -3,13 +3,15 @@ package com.dischain.bnfparser.PDA;
 import com.dischain.bnfparser.BNFContents.*;
 import com.dischain.bnfparser.BaseGrammar.BaseGrammar;
 import com.dischain.bnfparser.Util.DGraph;
+import com.dischain.bnfparser.Util.SequenceHandler;
 
-import java.beans.Expression;
 import java.util.Stack;
 
 public class PDA {
 
     private BNFGrammar grammar;
+
+    private SequenceHandler handler;
 
     public DGraph graph;
 
@@ -26,75 +28,69 @@ public class PDA {
 
     public boolean acceptSequence(String word) {
 
-        while (true) {
+        handler = new SequenceHandler(word);
+        String curWord = handler.getNext();
+        while (true/*handler.containsElse()*/) {
             AbstractMLVariable curMLVar = stack.peek();
-
-            if (!curMLVar.isTerminal() || !BaseGrammar.isBaseGrammarSymbol(curMLVar)) {
+            System.out.println("Current variable: " + curMLVar);
+            System.out.println("Current word: " + curWord);
+            if (!curMLVar.isTerminal() && !BaseGrammar.isBaseGrammarSymbol(curMLVar)) {
                 AbstractBNFRule curRule = grammar.getRule(curMLVar.getVariable());
+                System.out.println("Current rule: " + curRule);
                 AbstractBNFExpression expanded = null;
                 for (AbstractBNFExpression expr : curRule.getExpressions()) {
-                    Boolean contains = false;
-                    graph.depthFirstSearch (word, expr);
-                    if (contains) {
+                    graph.depthFirstSearch (curWord, expr);
+                    if (graph.isFound()) {
+                        System.out.println("Найдено " + expr);
                         expanded = expr;
+                        break;
                     }
                 }
+                /*for (AbstractBNFExpression expr : curRule.getExpressions()) {
+                    for (AbstractMLVariable var : expr.getVariables()) {
+                        *//*if (BaseGrammar.isBaseGrammarSymbol(var)) {
+                            System.out.println("Это символ базовой грамматики: " + var);
+                            continue;
+                        }*//*
+                        graph.depthFirstSearch(curWord, grammar.getRule(var));
+                        if (graph.isFound()) {
+                            expanded = expr;
+                            break;
+                        }
+                    }
+                }*/
+                System.out.println("Следующее выражение: " + expanded);
                 if (expanded != null) {
                     stack.pop();
                     int size = expanded.getVariables().size();
-                    for (int i = size - 1; i >= 0; i --)
+                    for (int i = size - 1; i >= 0; i --) {
+                        System.out.println("Заталкивается " + expanded.getVariables().get(i));
                         stack.push(expanded.getVariables().get(i));
+                    }
+                } else {
+                    //Не нашли
+                    return false;
                 }
             }
-            if (curMLVar.isTerminal() !BaseGrammar.isBaseGrammarSymbol()) {
-                if (curMLVar.getVariable().equals(curWord) ) {
+            if (curMLVar.isTerminal() || BaseGrammar.isBaseGrammarSymbol(curMLVar)) {
+                if (curMLVar.getVariable().equals(curWord)
+                        || BaseGrammar.equals(curWord, curMLVar)) {
+                    if (handler.containsElse())
+                        curWord = handler.getNext();
                     stack.pop();
-                    nextWord();
+                    //handler.getNext();
+                } else {
+                    return false;
                 }
             }
-
-            if (stack.isEmpty()) return true;
-            else return false;
+            if (stack.isEmpty() && handler.containsElse()) {
+                System.out.println("sdasdasd");
+                break;
+            }
+            if (stack.isEmpty() /*&& !handler.containsElse()*/) return true;
+            System.out.println("Есть ли еще правила " + handler.containsElse());
+            System.out.println();
         }
+        return false;
     }
-
-    public void depthFirstSearch (String word, AbstractBNFExpression expression) {
-
-        if (expression.isTerminalExpression()) {
-            System.out.println("Нашли терминальное выражение");
-            if (expression.equalsTerm(word)) {
-                return;
-            }
-        }
-
-        else if (!expression.isTerminalExpression()) {
-            for (AbstractMLVariable var : expression.getVariables()) {
-                depthFirstSearch (word, grammar.getRule(var));
-            }
-        }
-    }
-
-    private void depthFirstSearch(String word, AbstractBNFRule fromRule) {
-        String ruleName = "";
-
-        if (fromRule.isTerminalRule()){
-            System.out.println("Нашли терминальное правило");
-            if (fromRule.containsTerm(word)){
-                ruleName = fromRule.getRuleName();
-                System.out.println("Нашли в правиле " + ruleName);
-            }
-        }
-
-        else if (!fromRule.isTerminalRule()) {
-            for (AbstractBNFExpression expr : fromRule.getExpressions()) {
-                for (AbstractMLVariable var : expr.getVariables()) {
-                    depthFirstSearch(word, grammar.getRule(var.getVariable()));
-                }
-            }
-        }
-    }
-
-    /*public void depthFirstSearch (String word, AbstractBNFRule fromRule) {
-        depthFirstSearch(word, fromRule);
-    }*/
 }
