@@ -3,14 +3,14 @@ package com.dischain.bnfparser.BNFContents;
 import java.util.List;
 
 /**
- * Представляет базовый тип выражения грамматики и состоят из множества
+ * Представляет базовый тип выражения грамматики и состоит из множества
  * металингвистических переменных одного типа и ограничено символом
  * <i>или</i> (<code>OR</code>) или двойным символом новой строки.
  * <p>В общем виде описывается в виде БНФ-нотации следующим образом:
  * <p><code>EXPRESSION = LIST | LIST SP OR SP EXPRESSION</code>,
  * <p>где <code>LIST</code> определяет последовательность металингвистических
- * переменных, которые могут быть как терминальными (<code>TerminalMLVariable</code>),
- * так и нетерминальными <code>NonterminalMLVariable</code>
+ * переменных, которые могут быть как терминальными ({@link TerminalMLVariable}),
+ * так и нетерминальными {@link NonterminalMLVariable}
  *
  * @see NonterminalBNFExpression
  * @see TerminalBNFExpression
@@ -22,6 +22,7 @@ public abstract class AbstractBNFExpression {
     /**
      * Возвращает список из металингвистических переменных этого правила
      * грамматики
+     *
      * @return variables список из металингвистических переменных этого правила
      * грамматики
      */
@@ -29,6 +30,7 @@ public abstract class AbstractBNFExpression {
 
     /**
      * Добавляет переменную в конец выражения.
+     *
      * @param variable металингвистическая переменная, которая будет добавлена
      */
     public abstract void addVariable (AbstractMLVariable variable);
@@ -36,10 +38,11 @@ public abstract class AbstractBNFExpression {
     /**
      * Проверяет, является ли данное выражение терминальным, т.е. состоит ли оно
      * только из терминальных символов грамматики
-     * @return true если это терминальное выражение
-     * @return false если нет
+     *
+     * @return {@code true} если это терминальное выражение, {@code false} в противном случае
      */
     public abstract boolean isTerminalExpression ();
+
 
     public abstract boolean equalsTerm(String term);
 }
