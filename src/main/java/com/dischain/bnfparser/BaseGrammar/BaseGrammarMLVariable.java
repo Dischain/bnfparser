@@ -17,10 +17,16 @@ public class BaseGrammarMLVariable extends AbstractMLVariable{
 
     private ArrayList<String> aliases;
 
+    /**
+     * Строит переменную базовой грамматики по ее имени и списку возможных
+     * псевдонимов
+     *
+     * @param generalName базовое имя переменной
+     * @param aliases псевдонимы переменной
+     */
     public BaseGrammarMLVariable(String generalName, String ... aliases) {
         super(generalName);
         this.aliases = new ArrayList<String>();
-        //this.aliases.add(this.getVariable());
         this.aliases.addAll(Arrays.asList(aliases));
     }
 
@@ -28,6 +34,11 @@ public class BaseGrammarMLVariable extends AbstractMLVariable{
         return false;
     }
 
+    /**
+     * Возвращает список всех псевдонимов переменной базовой грамматики
+     *
+     * @return список всех псевдонимов переменной
+     */
     public ArrayList<String> getAliases() {
         return aliases;
     }

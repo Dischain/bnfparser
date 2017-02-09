@@ -10,6 +10,9 @@ import java.util.Map;
  * При загрузке данного класса выполняется статическая инициализаци
  * хранилища базовыми правилами.
  *
+ * <p>В число символов базовой грамматики входят {@code SP, IS, OR, QUOTE}. Так же
+ * базовая грамматика может быит расширена другими символами </p>
+ *
  * @see BaseGrammarContainer
  * @see BaseGrammarMLVariable
  */
@@ -21,14 +24,35 @@ class BaseGrammarContainer {
         container = new HashMap<String, BaseGrammarMLVariable>();
     }
 
+    /**
+     * Помещает переменную базовой грамматики в хранилище
+     *
+     * @param key имя переменной
+     * @param variable переменная базовой грамматики
+     */
     static void put(String key, BaseGrammarMLVariable variable) {
         container.put(key, variable);
     }
 
+    /**
+     * Возвращает объект {@link BaseGrammarMLVariable}, соответствующий имени некоторой
+     * металингвистической переменной.
+     *
+     * @param var металингвистическая переменная
+     * @return соответствующий данной переменной символ базовой грамматики
+     */
     public static BaseGrammarMLVariable get (AbstractMLVariable var) {
         return container.get(var.getVariable());
     }
 
+    /**
+     * Проверяет, содержит ли хранилище символ базовой грамматики, соответствующий
+     * имени переменной
+     *
+     * @param key имя металингвистической переменной
+     * @return {@code true}, если в контейнере содержится переменная с таким именем,
+     * {@code false} в противном случае
+     */
     static boolean containsKey(String key) {
         return container.containsKey(key);
     }
